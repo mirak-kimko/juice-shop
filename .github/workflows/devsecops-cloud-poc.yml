@@ -28,19 +28,20 @@ jobs:
           npm install -g @cyclonedx/cyclonedx-npm
           cyclonedx-npm --output-format JSON --output-file sbom.json --omit dev || true
 
+      # ---- ANALYSE STATIQUE (SONARQUBE CLOUD) ----
       - name: 4. Analyse Code de SonarQube Cloud
         uses: sonarsource/sonarqube-scan-action@v6
-        continue-on-error: true # 👈 Empêche une faille de code de bloquer tout le pipeline
+        continue-on-error: true # Permet de passer aux étapes 5 et 6 même si Sonar trouve des failles
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
-          args: >
+          args: |
             -Dsonar.organization=mirak-kimko
             -Dsonar.projectKey=mirak-kimko
-            -Dsonar.sources=src
+            -Dsonar.sources=.
             -Dsonar.exclusions=node_modules/**,dist/**,public/**
             -Dsonar.javascript.node.maxSpace=4096
-            -Dsonar.qualitygate.wait=false #
+            -Dsonar.qualitygate.wait=false
 
       - name: 5. Analyse de Securite avec Aqua Trivy
         uses: aquasecurity/trivy-action@master
