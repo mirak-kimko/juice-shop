@@ -7,7 +7,7 @@ on:
         description: 'Nom du fournisseur ou de la solution SaaS'
         required: true
         default: 'SaaS-Provider-Evaluation'
-push:
+  push:
     branches: [ master ]
 
 jobs:
@@ -61,6 +61,5 @@ jobs:
           name: rapports-securite-bruts
           path: |
             gitleaks.json
-            npm-audit.json
             sbom.json
             trivy-results.json
