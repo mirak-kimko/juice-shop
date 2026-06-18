@@ -1,4 +1,4 @@
-name: Audit Sécurité Fournisseur SaaS (Automatisé)
+name: Audit Securite Fournisseur SaaS
 
 on:
   workflow_dispatch:
@@ -14,23 +14,20 @@ jobs:
   audit-pipeline:
     runs-on: ubuntu-latest
     steps:
-      - name: 1. Récupération du Code
+      - name: 1. Recuperation du Code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # ---- ANALYSE DES SECRETS (GITLEAKS) ----
       - name: 2. Scan des Secrets (Gitleaks)
         run: |
           docker run --rm -v ${{ github.workspace }}:/path ghcr.io/gitleaks/gitleaks:latest detect --source=/path --report-path=/path/gitleaks.json --verbose || true
 
-      # ---- PREPARATION & VULNERABILITES COMPOSANTS ----
-      - name: 3. Installation et Analyse des Dépendances (BOM & CVE)  
+      - name: 3. Installation et Analyse des Dependances
         run: |
           npm install -g @cyclonedx/cyclonedx-npm
           cyclonedx-npm --output-format JSON --output-file sbom.json --omit dev || true
 
-      # ---- ANALYSE STATIQUE (SONARQUBE CLOUD) ----
       - name: 4. Analyse Code de SonarQube Cloud
         uses: sonarsource/sonarqube-scan-action@v6
         env:
@@ -43,8 +40,7 @@ jobs:
             -Dsonar.exclusions=node_modules/**,dist/**,public/**
             -Dsonar.javascript.node.maxSpace=4096
 
-      # ---- SCANNEUR AQUA TRIVY ----
-      - name: 5. Analyse de Sécurité avec Aqua Trivy
+      - name: 5. Analyse de Securite avec Aqua Trivy
         uses: aquasecurity/trivy-action@master
         continue-on-error: true
         with:
@@ -54,8 +50,7 @@ jobs:
           output: 'trivy-results.json'
           severity: 'CRITICAL,HIGH,MEDIUM,LOW'
 
-      # ---- ARCHIVAGE DES RAPPORTS BRUTS SUR GITHUB ----
-      - name: 6. Publication des Rapports d'Audit (JSON & SBOM)
+      - name: 6. Publication des Rapports d'Audit
         uses: actions/upload-artifact@v4
         with:
           name: rapports-securite-bruts
