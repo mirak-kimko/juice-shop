@@ -7,6 +7,8 @@ on:
         description: 'Nom du fournisseur ou de la solution SaaS'
         required: true
         default: 'SaaS-Provider-Evaluation'
+push:
+    branches: [ master ]
 
 jobs:
   audit-pipeline:
