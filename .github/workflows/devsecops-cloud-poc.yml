@@ -39,7 +39,6 @@ jobs:
             -Dsonar.sources=.
             -Dsonar.exclusions=node_modules/**,dist/**,public/**
             -Dsonar.javascript.node.maxSpace=4096
-            -Dsonar.qualitygate.wait=false
 
       - name: 5. Analyse de Securite avec Aqua Trivy
         uses: aquasecurity/trivy-action@master
